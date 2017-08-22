@@ -1,0 +1,58 @@
+buildscript {
+    ext.kotlin_version = '1.1.2'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.0.RC2"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: "io.spring.dependency-management"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.82'
+    }
+}
+
+dependencies {
+    compile (
+      "org.jetbrains.kotlin:kotlin-stdlib-jre8",
+      "com.amazonaws:aws-java-sdk-dynamodb",
+      "org.jetbrains.kotlin:kotlin-reflect",
+      "com.google.guava:guava:21.0",
+      "com.google.code.gson:gson:2.8.0"
+    )
+
+    testCompile (
+      "junit:junit:4.12",
+      "org.jetbrains.kotlin:kotlin-test",
+      "org.jetbrains.kotlin:kotlin-test-junit",
+      "org.mockito:mockito-core:2.8.47"
+    )
+
+}
+
+// Define the main class for the application
+mainClassName = 'floodfx.LearnDynamo'
+
+
+task buildJar(type: Jar) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+}
+
+build.dependsOn buildJar
